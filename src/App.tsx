@@ -4,13 +4,15 @@ import { TaskList } from './components/task-list/TaskList';
 import { TaskType } from './types/Task.type';
 import { UserType } from './types/User.type';
 import { Task } from './components/task/Task';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from './store/store';
 
 export const TasksContext = createContext([] as TaskType[]);
 export const UserContext = createContext({} as UserType);
 
 export const App: React.FC = () => {
   const [taskList, setTaskList] = useState([] as TaskType[]);
-  const [currentUser, setCurrentUser] = useState({} as UserType);
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     fetchTasks();
@@ -26,6 +28,10 @@ export const App: React.FC = () => {
   };
 
   const fetchUser = () => {
+    dispatch({
+      type: 'currentUser/fetchCurrentuser',
+    });
+
     fetch('https://api.jsonbin.io/v3/b/66428a86ad19ca34f8690736')
       .then((response) => response.json())
       .then((data: any) => {
@@ -35,20 +41,21 @@ export const App: React.FC = () => {
           lastName: user.last_name,
         };
 
-        setCurrentUser(transformedUser);
+        dispatch({
+          type: 'currentUser/setCurrentUser',
+          payload: transformedUser,
+        })
       })
   };
 
   return (
     <Router>
-      <UserContext.Provider value={currentUser}>
-        <TasksContext.Provider value={taskList}>
-          <Routes>
-            <Route path='/' element={<TaskList />}/>
-            <Route path='/edit/:id' element={<Task />} />
-          </Routes>
-        </TasksContext.Provider>
-      </UserContext.Provider>
+      <TasksContext.Provider value={taskList}>
+        <Routes>
+          <Route path='/edit/:id' element={<Task />} />
+          <Route path='/' element={<TaskList />}/>
+        </Routes>
+      </TasksContext.Provider>
     </Router>
   );
 }

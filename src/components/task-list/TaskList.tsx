@@ -3,13 +3,17 @@ import { useState, useContext } from 'react';
 import TasksDoneButton from '../TasksDoneButton';
 import { TaskType } from '../../types/Task.type';
 import { TaskListItem } from '../task-list-item/TaskListItem';
-import { TasksContext, UserContext } from '../../App';
+import { TasksContext } from '../../App';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
 
 export const TaskList: React.FC = () => {
   const [tasksCompleted, setTasksCompleted] = useState(false as boolean);
 
   const taskList = useContext(TasksContext);
-  const currentUser = useContext(UserContext);
+  const currentUserState = useSelector((state: RootState) => state.currentUser);
+  const userFullName = `${currentUserState.user.firstName} ${currentUserState.user.lastName}`;
+  const isLoading = currentUserState.isLoading;
 
   const setAllTasksDone = () => {
     setTasksCompleted(true);
@@ -26,7 +30,13 @@ export const TaskList: React.FC = () => {
         tasksCompleted && <h3>All tasks are done!</h3>
       }
       {
-        currentUser?.firstName && <h3>Welcome {currentUser.firstName} {currentUser.lastName}!</h3>
+        isLoading && <h3>Loading...</h3>
+      }
+      {
+        !isLoading &&
+        <h3>
+          Welcome {userFullName}
+        </h3>
       }
       <ul
         css={{
