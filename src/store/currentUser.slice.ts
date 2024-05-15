@@ -33,6 +33,10 @@ export const currentUserSlice = createSlice({
   },
 });
 
-export const { setCurrentUser, setIsLoading } = currentUserSlice.actions;
+export const {
+  fetchCurrentuser,
+  setCurrentUser,
+  setIsLoading,
+} = currentUserSlice.actions;
 
 export default currentUserSlice.reducer;
