@@ -1,19 +1,19 @@
 /** @jsxImportSource @emotion/react */
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import TasksDoneButton from '../TasksDoneButton';
 import { TaskType } from '../../types/Task.type';
 import { TaskListItem } from '../task-list-item/TaskListItem';
-import { TasksContext } from '../../App';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 
 export const TaskList: React.FC = () => {
   const [tasksCompleted, setTasksCompleted] = useState(false as boolean);
 
-  const taskList = useContext(TasksContext);
   const currentUserState = useSelector((state: RootState) => state.currentUser);
   const userFullName = `${currentUserState.user.firstName} ${currentUserState.user.lastName}`;
   const isLoading = currentUserState.isLoading;
+
+  const taskList = useSelector((state: RootState) => state.taskList.tasks);
 
   const setAllTasksDone = () => {
     setTasksCompleted(true);

@@ -1,5 +1,6 @@
 import { TaskType } from "../types/Task.type";
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { fetchTaskList } from "./tasks.actions";
 
 interface TaskListState {
   tasks: TaskType[];
@@ -16,16 +17,20 @@ const initialTaskListState: TaskListState = {
 const taskListSlice = createSlice({
   name: 'taskList',
   initialState: initialTaskListState,
-  reducers: {
-    fetchTasks: (state) => {
+  reducers: {},
+  extraReducers: (builder) => {
+    builder.addCase(fetchTaskList.pending, (state) => {
       state.isLoading = true;
-    },
-    setTaskList: (state, action) => {
-      state.tasks = action.payload;
+    });
+    builder.addCase(fetchTaskList.fulfilled, (state, action: PayloadAction<TaskType[]>) => {
       state.isLoading = false;
-    },
-  },
+      state.tasks = action.payload;
+    });
+    builder.addCase(fetchTaskList.rejected, (state, action: PayloadAction<any>) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    });
+  }
 });
 
-export const { fetchTasks, setTaskList } = taskListSlice.actions;
 export default taskListSlice.reducer;

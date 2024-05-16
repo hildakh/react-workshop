@@ -1,5 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { UserType } from "../types/User.type";
+import { fetchCurrentUser } from "./currentUser.actions";
 
 interface CurrentUserState {
   user : UserType;
@@ -19,24 +20,20 @@ export const currentUserInitialState: CurrentUserState = {
 export const currentUserSlice = createSlice({
   name: 'currentUser',
   initialState: currentUserInitialState,
-  reducers: {
-    fetchCurrentuser: (state) => {
+  reducers: {},
+  extraReducers: (builder) => {
+    builder.addCase(fetchCurrentUser.pending, (state) => {
       state.isLoading = true;
-    },
-    setCurrentUser: (state, action) => {
-      state.user = action.payload;
+    });
+    builder.addCase(fetchCurrentUser.fulfilled, (state, action: PayloadAction<UserType>) => {
       state.isLoading = false;
-    },
-    setIsLoading: (state) => {
-      state.isLoading = true;
-    }
-  },
+      state.user = action.payload;
+    });
+    builder.addCase(fetchCurrentUser.rejected, (state, action: PayloadAction<any>) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    });
+  }
 });
-
-export const {
-  fetchCurrentuser,
-  setCurrentUser,
-  setIsLoading,
-} = currentUserSlice.actions;
 
 export default currentUserSlice.reducer;
